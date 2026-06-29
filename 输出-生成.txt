@@ -1,1 +1,160 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        Pro P = new Pro();
+        Pro X = new Pro();
+
+        
+        public Form1()
+        {
+            InitializeComponent();
+
+            P.ID = "猎人";
+            P.ATK = 50;
+            P.HP = 200;
+
+            X.ID = "猎物";
+            X.ATK = 30;
+            X.HP = 200;
+
+            textBox1.Text = "50";
+            textBox1.ReadOnly = true;
+
+            HP.Text = "血量" + P.ID;
+            HP2.Text = "血量" + X.ID;
+            战斗状态日志.Text = "战斗开始!";
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 攻击按钮_Click(object sender, EventArgs e)
+        {
+            
+
+            P.Htk(X);
+
+            HP.Text = "血量" + P.HP;
+
+            HP2.Text = "血量" + X.HP;
+
+            if (X.HP <= 0)
+            {
+                战斗状态日志.Text = "敌人被击败了！";
+
+                攻击按钮.Enabled = false;
+
+                回血按钮.Enabled = false;
+
+                return;
+            }
+            X.Htk(P);
+            X.回血(30);
+            HP2.Text = "血量" + X.HP;
+            战斗状态日志.Text = X.ID + " 自动回血 30 点";
+            
+
+            HP.Text = "血量" + P.HP;
+            HP2.Text = "血量" + X.HP;
+
+            if (P.HP <= 0)
+            {
+                战斗状态日志.Text = "你被攻击了！";
+
+                攻击按钮.Enabled = false;
+
+                回血按钮.Enabled = false;
+
+            }
+            战斗状态日志.Text = P.Htk(X);
+        }
+
+        private void 回血按钮_Click(object sender, EventArgs e)
+        {
+            int 回血值 = 50;
+
+
+            P.回血(回血值);
+
+            HP.Text = "玩家血量;" + P.HP;
+            战斗状态日志.Text = P.ID + "回血" + 回血值 + "点";
+        }
+
+        private void 回血输入框_TextChanged(object sender, EventArgs e)
+        {
+            回血输入框.ReadOnly = true;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 战斗状态日志_Click(object sender, EventArgs e)
+        {
+            
+
+
+        }
+    }
+    class Pro
+    {
+        public string ID { get; set; }
+        public int ATK { get; set; }
+        public int HP { get; set; }
+
+        public event Action OnAtk;
+        public event Action On回血;
+
+        
+        public  string  Htk(Pro LR)
+        {
+            OnAtk?.Invoke();
+
+            int SH = ATK;
+            string 日志信息 = "";
+
+            // 暴击逻辑
+            Random rand = new Random();
+            int 暴击判定 = rand.Next(1, 11);
+
+            if (暴击判定 <= 3)
+            {
+                SH = ATK * 2;
+
+                日志信息 = "暴击！伤害翻倍！";
+
+            }
+            LR.HP = LR.HP - SH;
+            if (LR.HP < 0) LR.HP = 0;
+
+            日志信息 = ID + " 打了 " + LR.ID + "，" + SH + " 点伤害，" + LR.ID + " 还剩 " + LR.HP + " HP";
+
+           return  日志信息;
+        }
+        public void 回血(int VL)
+        {
+            On回血?.Invoke();
+
+            HP = HP + VL;
+            if (HP > 300) HP = 300;
+        }
+    }
+
+    
+}
 ﻿
